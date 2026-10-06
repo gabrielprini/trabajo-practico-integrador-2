@@ -8,7 +8,7 @@ const HomePage = () => {
     // al final de useFetch teníamos: return { data, isLoading, error }, entonces sacamos las tres cosas 
     // data => artículos recibidos, isLoading => ¿está cargando?, error => ¿hubo un error?
   const { data, isLoading, error } = useFetch(`${API_URL}/api/articles`)
-
+  const articles = data?.data ?? []
   // Eso significa que terminamos la ejecución de HomePage en ese momento.
   if (isLoading) {
     return <p className="p-6 text-center text-gray-500">Cargando artículos...</p>
@@ -24,7 +24,7 @@ const HomePage = () => {
   }
 
   // Acá tenemos dos condiciones. Si data no existe o ¿El array tiene 0 elementos?
-  if (!data || data.length === 0) {
+  if (!data || articles.length === 0) {
     return (
       <p className="p-6 text-center text-gray-500">
         No hay artículos publicados todavía.
@@ -40,7 +40,7 @@ const HomePage = () => {
       <div className="grid gap-4 sm:grid-cols-2">
         {/* data contiene los artículos.
             .map() recorre cada elemento*/}
-        {data.map((article) => (
+        {articles.map((article) => (
             // React necesita identificar cada elemento de una lista.
           <article
             key={article.id}
