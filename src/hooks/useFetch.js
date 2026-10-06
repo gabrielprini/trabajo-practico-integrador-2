@@ -4,7 +4,7 @@
 // useCallback → guardar una función para que no se cree nuevamente en cada renderizado.
 import { useCallback, useEffect, useState } from "react";
 
-function useFetch(url) {
+const useFetch = (url) => {
   // Esto es parecido a formState, data = datos actuales, setData = funcion para cambiar
   // y empezamos con null porque todavia no recibimos datos de la API
   const [data, setData] = useState(null);
