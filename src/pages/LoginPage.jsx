@@ -1,27 +1,60 @@
-// Link sirve para navegar entre páginas de React sin recargar toda la página.
-import { Link } from "react-router";
-// Traemos el hook que vimos antes. Nos permite manejar: email y password sin tener que crear un useState separado para cada uno.
-import useForm from "../hooks/useForm";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import useForm from '../hooks/useForm'
 
-// Creamos el componente que representa nuestra página de login.
+const API_URL = 'http://localhost:3000'
+
 function LoginPage() {
-  // Acá estamos utilizando el hook que vimos anteriormente.
+  const navigate = useNavigate()
   const { formState, handleInputChange } = useForm({
-    email: "",
-    password: "",
-  });
+    email: '',
+    password: '',
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState([])
 
-  // Esta función se ejecuta cuando el usuario envía el formulario. Por ejemplo cuando hace clic
+  const loginUser = async () => {
+    try {
+      setIsLoading(true)
+      setErrors([])
+
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(formState),
+      })
+
+      if (response.ok) {
+        localStorage.setItem('isLogged', 'true')
+        navigate('/', { replace: true })
+        return
+      }
+
+      if (response.status === 400) {
+        const result = await response.json()
+        setErrors(result.errors.map((error) => error.msg))
+      } else if (response.status === 401) {
+        setErrors(['Email o contraseña incorrectos.'])
+      } else if (response.status === 403) {
+        setErrors(['No tenés permisos para realizar esta acción.'])
+      } else {
+        setErrors(['Ocurrió un error en el servidor. Intentá más tarde.'])
+      }
+    } catch {
+      setErrors(['No se pudo conectar con el servidor. Verificá tu conexión.'])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleSubmit = (event) => {
-    // lo que hace event.preventDefault() es que cuando enviás un formulario HTML,
-    // el navegador intenta: enviar el formulario y recargar/navegar la página. preventDefault() evita ese comportamiento.
-    event.preventDefault();
-  };
+    event.preventDefault()
+    loginUser()
+  }
 
   return (
-    // es el contenedor
     <main className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-      {/* onSubmit={handleSubmit}, Significa: Cuando se envíe este formulario, ejecutá handleSubmit.*/}
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-xl bg-white p-6 shadow-md"
@@ -30,10 +63,15 @@ function LoginPage() {
           Iniciar sesión
         </h1>
 
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
+        {errors.length > 0 && (
+          <ul className="mb-4 rounded-lg bg-red-100 p-3 text-sm text-red-700">
+            {errors.map((message) => (
+              <li key={message}>{message}</li>
+            ))}
+          </ul>
+        )}
+
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email
         </label>
         <input
@@ -45,10 +83,8 @@ function LoginPage() {
           required
           className="mb-4 mt-1 w-full rounded-lg border border-gray-300 p-2 focus:border-green-600 focus:outline-none"
         />
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
+
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
           Contraseña
         </label>
         <input
@@ -63,23 +99,21 @@ function LoginPage() {
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-green-600 py-2 font-semibold text-white hover:bg-green-700"
+          disabled={isLoading}
+          className="w-full rounded-lg bg-green-600 py-2 font-semibold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Ingresar
+          {isLoading ? 'Ingresando...' : 'Ingresar'}
         </button>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          ¿No tenés cuenta?{" "}
-          <Link
-            to="/register"
-            className="font-medium text-green-700 hover:underline"
-          >
+          ¿No tenés cuenta?{' '}
+          <Link to="/register" className="font-medium text-green-700 hover:underline">
             Registrate
           </Link>
         </p>
       </form>
     </main>
-  );
+  )
 }
 
-export default LoginPage;
+export default LoginPage
