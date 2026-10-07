@@ -16,14 +16,9 @@ const useFetch = (url) => {
   // Esta función va a hacer la petición a la API.
   const fetchData = useCallback(async () => {
     try {
-      // Antes de hacer la petición decimos: "Estoy cargando." Entonces: isLoading = true
-      setIsLoading(true);
-      // Si anteriormente había un error, lo eliminamos.
-      setError(null);
-
       // fetch() hace una petición HTTP.
       // url indica a dónde hacemos la petición.
-      // credentials: 'include': Le dice al navegador que incluya las credenciales/cookies 
+      // credentials: 'include': Le dice al navegador que incluya las credenciales/cookies
       // en la petición cuando corresponda.
       const response = await fetch(url, { credentials: "include" });
 
@@ -44,10 +39,11 @@ const useFetch = (url) => {
 
       // response.json() convierte esa respuesta para poder trabajar con ella en JavaScript.
       const result = await response.json();
-      // aca guardamos el resultado 
+      // aca guardamos el resultado
       setData(result);
+      setError(null);
       // Si algo falló dentro del try, llegamos acá.
-      // err representa el error. 
+      // err representa el error.
     } catch (err) {
       setError(err.message);
       // finally se ejecuta siempre, haya salido bien o haya salido mal la petición.
@@ -55,18 +51,21 @@ const useFetch = (url) => {
       // setIsLoading(false) Porque ya terminamos de cargar.
       setIsLoading(false);
     }
-    // Esto significa que fetchData depende de url. 
+    // Esto significa que fetchData depende de url.
     // Si cambia url, React crea una nueva versión de fetchData.
   }, [url]);
 
   // Esto hace que fetchData() se ejecute cuando corresponde.
   useEffect(() => {
+    // La consigna pide invocar desde el efecto la función async declarada afuera.
+    // Los setState de fetchData ocurren después de un await, no de forma sincrónica.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
-    // "Este efecto depende de fetchData." 
+    // "Este efecto depende de fetchData."
     // Como fetchData depende de url, si cambia la URL, también se vuelve a ejecutar la petición.
   }, [fetchData]);
 
   return { data, isLoading, error };
-}
+};
 
 export default useFetch;
