@@ -1,21 +1,48 @@
-# React + Vite
+# Trabajo Práctico Integrador N° II
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend del Sistema de Gestión de Blog Personal con Autenticación, desarrollado con React, Vite y Tailwind CSS. Consume el backend del Trabajo Práctico Integrador N° I.
 
-Currently, two official plugins are available:
+## Tecnologías
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React (JavaScript) con Vite
+- React Router
+- Tailwind CSS
 
-## React Compiler
+## Backend utilizado
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Repositorio del Trabajo Práctico Integrador N° I:
+https://github.com/gabrielprini/trabajo-practico-integrador-1
 
-## Expanding the ESLint configuration
+## Cómo levantar el proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 1. Backend
 
+1. Clonar el repositorio del backend e instalar dependencias con `npm install`.
+2. Crear el archivo `.env` a partir de `.env.example` y completar los datos de la base de datos y el `JWT_SECRET`.
+3. Tener MySQL en ejecución con la base de datos creada.
+4. Configurar CORS para aceptar el origen del frontend con credenciales:
 
+```js
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
+```
+
+5. Levantar el servidor (por defecto en `http://localhost:3000`).
+
+### 2. Frontend
+
+```bash
+git clone https://github.com/gabrielprini/trabajo-practico-integrador-2.git
+cd trabajo-practico-integrador-2
+npm install
+npm run dev
+```
+
+La aplicación queda disponible en `http://localhost:5173`.
+
+## Rutas
+
+- `/login` y `/register`: rutas públicas.
+- `/`: página principal con el listado de artículos (ruta privada).
 funcionalidades-carpetas:
 components: Acá ponés partes de la interfaz que podés reutilizar en diferentes páginas. Por ejemplo el 
 navbar, footer, button, card 
